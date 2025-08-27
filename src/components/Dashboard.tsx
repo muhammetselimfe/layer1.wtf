@@ -39,9 +39,61 @@ export function Dashboard({ chainData, loading, onRefresh }: DashboardProps) {
   // Calculate aggregate metrics from all chains
   const metrics = sortedChainData.length > 0 ? {
     totalTps: sortedChainData.reduce((sum, chain) => {
-      // Only include data from the last hour (3600000 ms)
-      const oneHourAgo = Date.now() - 3600000
-      if (chain.blockData && chain.lastUpdated > oneHourAgo) {
+      // Only include data from chains with recent blocks (within last hour)
+      const oneHourAgo = Math.floor(Date.now() / 1000) - 3600 // Convert to seconds
+      if (chain.blockData && !chain.loading && !chain.error) {
+        const blockTimestamp = parseInt(chain.blockData.timestamp, 16)
+        if (blockTimestamp > oneHourAgo) {
+          const tps = chain.blockData.transactions.length / 2 // Assuming 2 second block time
+          return sum + tps
+        }
+      }
+      return sum
+    }, 0),
+    totalGasPerSecond: sortedChainData.reduce((sum, chain) => {
+      // Only include data from chains with recent blocks (within last hour)
+      const oneHourAgo = Math.floor(Date.now() / 1000) - 3600 // Convert to seconds
+      if (chain.blockData && !chain.loading && !chain.error) {
+        const blockTimestamp = parseInt(chain.blockData.timestamp, 16)
+        if (blockTimestamp > oneHourAgo) {
+          const gasUsed = parseInt(chain.blockData.gasUsed, 16)
+          return sum + (gasUsed / 2) // Assuming 2 second block time
+        }
+      }
+      return sum
+    }, 0),
+    averageUtilization: (() => {
+      // Only include data from chains with recent blocks (within last hour)
+      const oneHourAgo = Math.floor(Date.now() / 1000) - 3600 // Convert to seconds
+      const recentChains = sortedChainData.filter(chain => 
+        chain.blockData && !chain.loading && !chain.error &&
+        parseInt(chain.blockData.timestamp, 16) > oneHourAgo
+      )
+      
+      if (recentChains.length === 0) return 0
+      
+      return recentChains.reduce((sum, chain) => {
+        const gasUsed = parseInt(chain.blockData!.gasUsed, 16)
+        const gasLimit = parseInt(chain.blockData!.gasLimit, 16)
+        return sum + (gasUsed / gasLimit)
+      }, 0) / recentChains.length
+    })()
+  } : null
+
+  // Debug: Log which chains are being included in metrics
+  if (metrics) {
+    const oneHourAgo = Math.floor(Date.now() / 1000) - 3600
+    const recentChains = sortedChainData.filter(chain => 
+      chain.blockData && !chain.loading && !chain.error &&
+      parseInt(chain.blockData.timestamp, 16) > oneHourAgo
+    )
+    console.log('Chains included in metrics:', recentChains.map(chain => ({
+      name: chain.chainName,
+      blockTimestamp: parseInt(chain.blockData!.timestamp, 16),
+      tps: chain.blockData!.transactions.length / 2,
+      age: Math.floor(Date.now() / 1000) - parseInt(chain.blockData!.timestamp, 16)
+    })))
+  }
         const tps = chain.blockData.transactions.length / 2 // Assuming 2 second block time
         return sum + tps
       }
