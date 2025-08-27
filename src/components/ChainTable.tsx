@@ -23,15 +23,19 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
   // Initialize static rows once when we first get data
   useEffect(() => {
     if (staticRows.length === 0 && chainData.length > 0) {
-      // Create initial static rows sorted by block number (highest first)
-      const initialRows = chainData
+      // Create initial static rows - chains with data sorted by block number (highest first)
+      const chainsWithData = chainData
         .filter(chain => chain.blockData && !chain.loading && !chain.error)
+        .sort((a, b) => {
+          const blockNumberA = parseInt(a.blockData!.number, 16)
+          const blockNumberB = parseInt(b.blockData!.number, 16)
+          return blockNumberB - blockNumberA // Highest block number first
+        })
         .map(chain => ({
           chainName: chain.chainName,
           blockchainId: chain.blockchainId,
           initialBlockNumber: parseInt(chain.blockData!.number, 16)
         }))
-        .sort((a, b) => b.initialBlockNumber - a.initialBlockNumber)
 
       // Add chains without data at the end, sorted alphabetically
       const chainsWithoutData = chainData
@@ -43,7 +47,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
         }))
         .sort((a, b) => a.chainName.localeCompare(b.chainName))
 
-      setStaticRows([...initialRows, ...chainsWithoutData])
+      setStaticRows([...chainsWithData, ...chainsWithoutData])
     }
   }, [chainData, staticRows.length])
 
