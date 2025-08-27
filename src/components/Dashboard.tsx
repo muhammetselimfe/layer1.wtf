@@ -94,36 +94,6 @@ export function Dashboard({ chainData, loading, onRefresh }: DashboardProps) {
       age: Math.floor(Date.now() / 1000) - parseInt(chain.blockData!.timestamp, 16)
     })))
   }
-        const tps = chain.blockData.transactions.length / 2 // Assuming 2 second block time
-        return sum + tps
-      }
-      return sum
-    }, 0),
-    totalGasPerSecond: sortedChainData.reduce((sum, chain) => {
-      // Only include data from the last hour (3600000 ms)
-      const oneHourAgo = Date.now() - 3600000
-      if (chain.blockData && chain.lastUpdated > oneHourAgo) {
-        const gasUsed = parseInt(chain.blockData.gasUsed, 16)
-        return sum + (gasUsed / 2) // Assuming 2 second block time
-      }
-      return sum
-    }, 0),
-    averageUtilization: (() => {
-      // Only include data from the last hour (3600000 ms)
-      const oneHourAgo = Date.now() - 3600000
-      const recentChains = sortedChainData.filter(chain => 
-        chain.blockData && chain.lastUpdated > oneHourAgo
-      )
-      
-      if (recentChains.length === 0) return 0
-      
-      return recentChains.reduce((sum, chain) => {
-        const gasUsed = parseInt(chain.blockData!.gasUsed, 16)
-        const gasLimit = parseInt(chain.blockData!.gasLimit, 16)
-        return sum + (gasUsed / gasLimit)
-      }, 0) / recentChains.length
-    })()
-  } : null
 
   return (
     <div className="dashboard">
