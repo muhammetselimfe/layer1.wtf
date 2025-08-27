@@ -12,19 +12,23 @@ interface ChainTableProps {
 export function ChainTable({ chainData, loading, onRefresh }: ChainTableProps) {
   // Sort chains by block number (highest first)
   const sortedChainData = [...chainData].sort((a, b) => {
-    // Prioritize chains with successful block data
-    if (a.blockData && !b.blockData) return -1
-    if (!a.blockData && b.blockData) return 1
+    // First, separate chains with and without block data
+    const aHasData = a.blockData && !a.loading && !a.error
+    const bHasData = b.blockData && !b.loading && !b.error
     
-    // If both have block data, sort by block number (highest first)
-    if (a.blockData && b.blockData) {
-      const blockNumberA = parseInt(a.blockData.number, 16)
-      const blockNumberB = parseInt(b.blockData.number, 16)
+    // Chains with data come first
+    if (aHasData && !bHasData) return -1
+    if (!aHasData && bHasData) return 1
+    
+    // If both have data, sort by block number (highest first)
+    if (aHasData && bHasData) {
+      const blockNumberA = parseInt(a.blockData!.number, 16)
+      const blockNumberB = parseInt(b.blockData!.number, 16)
       return blockNumberB - blockNumberA
     }
     
-    // For chains without block data, sort by last updated time
-    return b.lastUpdated - a.lastUpdated
+    // If neither has data, sort by chain name alphabetically
+    return a.chainName.localeCompare(b.chainName)
   })
 
   // Find the chain with the highest utilization
