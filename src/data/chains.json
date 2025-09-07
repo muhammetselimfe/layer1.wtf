@@ -117,18 +117,6 @@
     "debugEnabled": false
   },
   {
-    "chainName": "GOODCARE",
-    "blockchainId": "2AB5dDcGsw86kroZ81AZXzdez3CgA1x9uXkyQDhxr98hjrkVhu",
-    "subnetId": "2TqrQau4E99KoUXcFjyf1Pek3rUHpDpqtN9rC5GDaCKFu7dfPo",
-    "rpcUrl": "https://meganode.solokhin.com/ext/bc/2AB5dDcGsw86kroZ81AZXzdez3CgA1x9uXkyQDhxr98hjrkVhu/rpc",
-    "evmChainId": "741741",
-    "blocksCount": "100+",
-    "estimatedTxCount": "100+",
-    "glacierChainId": "741741",
-    "comment": null,
-    "debugEnabled": true
-  },
-  {
     "chainName": "NUMINEMainnet",
     "blockchainId": "2c1BN4N9qEhNmW4yCpeLK24SfjFQLyS1Z7FtgRDaYxZWFUUKxf",
     "subnetId": "2nCzBViQ5jxLaxkg9TABx6oXu1UGU7chM7G6XzPvW9ehP8RfrJ",
@@ -407,18 +395,6 @@
     "estimatedTxCount": null,
     "comment": "Not sure which network is this, looks like NUMINEMainnet is the right one. ",
     "debugEnabled": false
-  },
-  {
-    "chainName": "lucid",
-    "blockchainId": "2vmiAUCfkXd67jEq2GQhzVgTfNs3tpUP89agEEvnRK7urMVpjb",
-    "subnetId": "hbP3PrnQS71Py1VVxvHfnCnr7MWos3XQesEsCKQoA9hpciyVR",
-    "rpcUrl": "https://meganode.solokhin.com/ext/bc/2vmiAUCfkXd67jEq2GQhzVgTfNs3tpUP89agEEvnRK7urMVpjb/rpc",
-    "evmChainId": "62521",
-    "blocksCount": "10+",
-    "estimatedTxCount": "10+",
-    "glacierChainId": "62521",
-    "comment": null,
-    "debugEnabled": true
   },
   {
     "chainName": "amichainMainnet",
