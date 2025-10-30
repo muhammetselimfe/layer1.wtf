@@ -65,7 +65,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
             <span className="sort-icon">⌄</span> Gas Limit
           </div>
           <div className="header-cell">
-            <span className="sort-icon">⌄</span> Settlement
+            <span className="sort-icon">⌄</span> Utilization
           </div>
           <div className="header-cell">Last Updated</div>
         </div>
@@ -100,7 +100,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
             <span className="sort-icon">⌄</span> Gas Limit
           </div>
           <div className="header-cell">
-            <span className="sort-icon">⌄</span> Settlement
+            <span className="sort-icon">⌄</span> Utilization
           </div>
           <div className="header-cell">Last Updated</div>
         </div>
@@ -134,7 +134,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
           <span className="sort-icon">⌄</span> Gas Limit
         </div>
         <div className="header-cell">
-          <span className="sort-icon">⌄</span> Settlement
+          <span className="sort-icon">⌄</span> Utilization
         </div>
         <div className="header-cell">Last Updated</div>
       </div>
@@ -202,6 +202,11 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
         const kbPerSecond = gasUsed * 0.021 // Rough approximation
         const timestamp = parseInt(chain.blockData.timestamp, 16)
         const gasLimit = parseInt(chain.blockData.gasLimit, 16) / 1000000 // Convert to Mgas
+        
+        // Calculate block utilization percentage
+        const gasUsedRaw = parseInt(chain.blockData.gasUsed, 16)
+        const gasLimitRaw = parseInt(chain.blockData.gasLimit, 16)
+        const utilization = (gasUsedRaw / gasLimitRaw) * 100
 
         return (
           <div key={chain.blockchainId} className={`table-row ${chain.blockchainId === highestUtilizationId ? 'highlighted' : ''}`}>
@@ -226,8 +231,8 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
             <div className="cell numeric-cell">
               <AnimatedCounter value={gasLimit} decimals={1} />M
             </div>
-            <div className="cell">
-              avalanche
+            <div className="cell numeric-cell">
+              <AnimatedCounter value={utilization} decimals={1} />%
             </div>
             <div className="cell timestamp-cell">{formatTimestamp(timestamp)}</div>
           </div>
