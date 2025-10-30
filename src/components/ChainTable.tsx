@@ -17,50 +17,6 @@ interface StaticChainRow {
 }
 
 export const ChainTable = React.memo(function ChainTable({ chainData, loading, onRefresh }: ChainTableProps) {
-  const [staticRows, setStaticRows] = useState<StaticChainRow[]>([])
-  const [chainDataMap, setChainDataMap] = useState<Map<string, ChainBlockData>>(new Map())
-
-  // Initialize static rows once when we first get data
-  useEffect(() => {
-    if (staticRows.length === 0 && chainData.length > 0) {
-      // Sort all chains by block number (highest first), then by name for those without data
-      const sortedChains = [...chainData].sort((a, b) => {
-        const aHasData = a.blockData && !a.loading && !a.error
-        const bHasData = b.blockData && !b.loading && !b.error
-        
-        // Chains with data come first
-        if (aHasData && !bHasData) return -1
-        if (!aHasData && bHasData) return 1
-        
-        // If both have data, sort by block number (highest first)
-        if (aHasData && bHasData) {
-          const blockNumberA = parseInt(a.blockData!.number, 16)
-          const blockNumberB = parseInt(b.blockData!.number, 16)
-          return blockNumberB - blockNumberA
-        }
-        
-        // For chains without data, sort alphabetically
-        return a.chainName.localeCompare(b.chainName)
-      })
-      
-      const initialRows = sortedChains.map(chain => ({
-        chainName: chain.chainName,
-        blockchainId: chain.blockchainId,
-        initialBlockNumber: chain.blockData ? parseInt(chain.blockData.number, 16) : 0
-      }))
-
-      setStaticRows(initialRows)
-    }
-  }, [chainData, staticRows.length])
-
-  // Update the data map whenever chainData changes
-  useEffect(() => {
-    const newMap = new Map<string, ChainBlockData>()
-    chainData.forEach(chain => {
-      newMap.set(chain.blockchainId, chain)
-    })
-    setChainDataMap(newMap)
-  }, [chainData])
 
   // Find the chain with the highest utilization
   const highestUtilizationId = useMemo(() => {
@@ -83,7 +39,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
     return maxId
   }, [chainData])
 
-  if (loading && staticRows.length === 0) {
+  if (loading && chainData.length === 0) {
     return (
       <div className="chain-table">
         <div className="table-header">
@@ -118,7 +74,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
     )
   }
 
-  if (staticRows.length === 0) {
+  if (chainData.length === 0) {
     return (
       <div className="chain-table">
         <div className="table-header">
@@ -183,32 +139,12 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
         <div className="header-cell">Last Updated</div>
       </div>
       
-      {staticRows.map((row) => {
-        const chain = chainDataMap.get(row.blockchainId)
-        
-        if (!chain) {
-          return (
-            <div key={row.blockchainId} className="table-row">
-              <div className="cell network-cell">
-                <span className="network-name">{row.chainName}</span>
-              </div>
-              <div className="cell">No data</div>
-              <div className="cell">--</div>
-              <div className="cell">--</div>
-              <div className="cell">--</div>
-              <div className="cell">--</div>
-              <div className="cell">--</div>
-              <div className="cell">--</div>
-              <div className="cell">--</div>
-            </div>
-          )
-        }
-
+      {chainData.map((chain) => {
         if (chain.loading) {
           return (
-            <div key={row.blockchainId} className="table-row">
+            <div key={chain.blockchainId} className="table-row">
               <div className="cell network-cell">
-                <span className="network-name">{row.chainName}</span>
+                <span className="network-name">{chain.chainName}</span>
               </div>
               <div className="cell">Loading...</div>
               <div className="cell">--</div>
@@ -224,9 +160,9 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
 
         if (chain.error) {
           return (
-            <div key={row.blockchainId} className="table-row error-row">
+            <div key={chain.blockchainId} className="table-row error-row">
               <div className="cell network-cell">
-                <span className="network-name">{row.chainName}</span>
+                <span className="network-name">{chain.chainName}</span>
               </div>
               <div className="cell error-cell">
                 Error: {chain.error}
@@ -244,9 +180,9 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
 
         if (!chain.blockData) {
           return (
-            <div key={row.blockchainId} className="table-row">
+            <div key={chain.blockchainId} className="table-row">
               <div className="cell network-cell">
-                <span className="network-name">{row.chainName}</span>
+                <span className="network-name">{chain.chainName}</span>
               </div>
               <div className="cell">No data</div>
               <div className="cell">--</div>
@@ -267,9 +203,9 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
         const timestamp = parseInt(chain.blockData.timestamp, 16)
 
         return (
-          <div key={row.blockchainId} className={`table-row ${row.blockchainId === highestUtilizationId ? 'highlighted' : ''}`}>
+          <div key={chain.blockchainId} className={`table-row ${chain.blockchainId === highestUtilizationId ? 'highlighted' : ''}`}>
             <div className="cell network-cell">
-              <span className="network-name">{row.chainName}</span>
+              <span className="network-name">{chain.chainName}</span>
             </div>
             <div className="cell numeric-cell">
               #<AnimatedCounter value={blockNumber} decimals={0} />

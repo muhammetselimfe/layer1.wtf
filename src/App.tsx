@@ -7,6 +7,7 @@ import { getActiveChains } from './data/chains'
 function App() {
   const [chainData, setChainData] = useState<ChainBlockData[]>([])
   const [loading, setLoading] = useState(true)
+  const [allDataFetched, setAllDataFetched] = useState(false)
 
   const fetchChainData = async (rpcUrl: string, chainName: string, evmChainId: string) => {
     try {
@@ -108,7 +109,7 @@ function App() {
   const fetchAllChainData = async () => {
     const activeChains = getActiveChains()
     
-    // Only initialize if we don't have data yet
+    // Initialize chain data if empty
     if (chainData.length === 0) {
       const initialChainData: ChainBlockData[] = activeChains.map(chain => ({
         chainName: chain.chainName,
@@ -123,11 +124,150 @@ function App() {
       setLoading(false)
     }
 
+    // Create a temporary array to collect all results
+    const tempChainData = [...chainData]
+
     // Fetch data for each chain
     const promises = activeChains.filter(chain => chain.evmChainId && chain.rpcUrl).map(async (chain, index) => {
       try {
         const blockData = await fetchChainData(chain.rpcUrl!, chain.chainName, chain.evmChainId!)
-        setChainData(prev => prev.map((item, i) => 
+        // Update the temporary array
+        const chainIndex = tempChainData.findIndex(item => item.blockchainId === chain.evmChainId)
+        if (chainIndex !== -1) {
+          tempChainData[chainIndex] = {
+            ...tempChainData[chainIndex],
+            blockData,
+            loading: false,
+            error: null,
+            lastUpdated: Date.now()
+          }
+        }
+      } catch (err) {
+        // Update the temporary array with error
+        const chainIndex = tempChainData.findIndex(item => item.blockchainId === chain.evmChainId)
+        if (chainIndex !== -1) {
+          tempChainData[chainIndex] = {
+            ...tempChainData[chainIndex],
+            loading: false,
+            error: err instanceof Error ? err.message : `Unknown error for ${chain.chainName}`,
+            lastUpdated: Date.now()
+          }
+        }
+      }
+    })
+
+    // Wait for all promises to complete
+    await Promise.allSettled(promises)
+
+    // Now sort the complete data by block number (highest to lowest)
+    const sortedChainData = tempChainData.sort((a, b) => {
+      const aHasData = a.blockData && !a.loading && !a.error
+      const bHasData = b.blockData && !b.loading && !b.error
+      
+      // Chains with data come first
+      if (aHasData && !bHasData) return -1
+      if (!aHasData && bHasData) return 1
+      
+      // If both have data, sort by block number (highest first)
+      if (aHasData && bHasData) {
+        const blockNumberA = parseInt(a.blockData!.number, 16)
+        const blockNumberB = parseInt(b.blockData!.number, 16)
+        return blockNumberB - blockNumberA
+      }
+      
+      // For chains without data, sort alphabetically
+      return a.chainName.localeCompare(b.chainName)
+    })
+
+    // Update state with sorted data
+    setChainData(sortedChainData)
+    setAllDataFetched(true)
+  }
+
+  // Separate function for subsequent updates that maintains order
+  const updateChainData = async () => {
+    if (!allDataFetched) return
+    
+    const activeChains = getActiveChains()
+    const tempChainData = [...chainData]
+
+    const promises = activeChains.filter(chain => chain.evmChainId && chain.rpcUrl).map(async (chain) => {
+      try {
+        const blockData = await fetchChainData(chain.rpcUrl!, chain.chainName, chain.evmChainId!)
+        const chainIndex = tempChainData.findIndex(item => item.blockchainId === chain.evmChainId)
+        if (chainIndex !== -1) {
+          tempChainData[chainIndex] = {
+            ...tempChainData[chainIndex],
+            blockData,
+            loading: false,
+            error: null,
+            lastUpdated: Date.now()
+          }
+        }
+      } catch (err) {
+        const chainIndex = tempChainData.findIndex(item => item.blockchainId === chain.evmChainId)
+        if (chainIndex !== -1) {
+          tempChainData[chainIndex] = {
+            ...tempChainData[chainIndex],
+            loading: false,
+            error: err instanceof Error ? err.message : `Unknown error for ${chain.chainName}`,
+            lastUpdated: Date.now()
+          }
+        }
+      }
+    })
+
+    await Promise.allSettled(promises)
+    
+    // Re-sort after updates to maintain proper order
+    const sortedChainData = tempChainData.sort((a, b) => {
+      const aHasData = a.blockData && !a.loading && !a.error
+      const bHasData = b.blockData && !b.loading && !b.error
+      
+      if (aHasData && !bHasData) return -1
+      if (!aHasData && bHasData) return 1
+      
+      if (aHasData && bHasData) {
+        const blockNumberA = parseInt(a.blockData!.number, 16)
+        const blockNumberB = parseInt(b.blockData!.number, 16)
+        return blockNumberB - blockNumberA
+      }
+      
+      return a.chainName.localeCompare(b.chainName)
+    })
+
+    setChainData(sortedChainData)
+  }
+
+  useEffect(() => {
+    fetchAllChainData()
+    
+    // After initial fetch, use update function for subsequent calls
+    const interval = setInterval(() => {
+      if (allDataFetched) {
+        updateChainData()
+      }
+    }, 5000)
+    
+    return () => clearInterval(interval)
+  }, [allDataFetched])
+
+  return (
+    <div className="app">
+      <Dashboard 
+        chainData={chainData}
+        loading={loading} 
+        onRefresh={() => {
+          if (allDataFetched) {
+            updateChainData()
+          } else {
+            fetchAllChainData()
+          }
+        }}
+      />
+    </div>
+  )
+}
           item.blockchainId === chain.evmChainId
             ? { ...item, blockData, loading: false, error: null, lastUpdated: Date.now() }
             : item
