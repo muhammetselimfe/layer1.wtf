@@ -62,7 +62,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
             <span className="sort-icon">⌄</span> Stack
           </div>
           <div className="header-cell">
-            <span className="sort-icon">⌄</span> DA
+            <span className="sort-icon">⌄</span> Gas Limit
           </div>
           <div className="header-cell">
             <span className="sort-icon">⌄</span> Settlement
@@ -97,7 +97,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
             <span className="sort-icon">⌄</span> Stack
           </div>
           <div className="header-cell">
-            <span className="sort-icon">⌄</span> DA
+            <span className="sort-icon">⌄</span> Gas Limit
           </div>
           <div className="header-cell">
             <span className="sort-icon">⌄</span> Settlement
@@ -131,7 +131,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
           <span className="sort-icon">⌄</span> Stack
         </div>
         <div className="header-cell">
-          <span className="sort-icon">⌄</span> DA
+          <span className="sort-icon">⌄</span> Gas Limit
         </div>
         <div className="header-cell">
           <span className="sort-icon">⌄</span> Settlement
@@ -201,6 +201,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
         const tps = chain.blockData.transactions.length / 2 // Assuming 2 second block time
         const kbPerSecond = gasUsed * 0.021 // Rough approximation
         const timestamp = parseInt(chain.blockData.timestamp, 16)
+        const gasLimit = parseInt(chain.blockData.gasLimit, 16) / 1000000 // Convert to Mgas
 
         return (
           <div key={chain.blockchainId} className={`table-row ${chain.blockchainId === highestUtilizationId ? 'highlighted' : ''}`}>
@@ -222,8 +223,8 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
             <div className="cell">
               Avalanche L1
             </div>
-            <div className="cell">
-              subnets
+            <div className="cell numeric-cell">
+              <AnimatedCounter value={gasLimit} decimals={1} />M
             </div>
             <div className="cell">
               avalanche
