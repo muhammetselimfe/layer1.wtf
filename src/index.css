@@ -485,6 +485,23 @@ body {
 }
 
 @media (max-width: 768px) {
+  .app {
+    padding: 5px;
+  }
+  
+  .main-container {
+    border: 1px solid #ffffff;
+  }
+  
+  .header-section {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  
+  .header-center {
+    gap: 10px;
+  }
+  
   .tabs-section {
     flex-direction: column;
   }
@@ -492,9 +509,121 @@ body {
   .tab {
     border-right: none;
     border-bottom: 1px solid #ffffff;
+    padding: 6px 8px;
+    font-size: 12px;
   }
   
   .tab:last-child {
     border-bottom: none;
+  }
+  
+  .totals-section {
+    padding: 8px;
+  }
+  
+  .totals-header {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .totals-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .metric-value {
+    font-size: 14px;
+  }
+  
+  .filters-section {
+    display: none; /* Hide filters on mobile to save space */
+  }
+  
+  /* Mobile table - show only essential columns */
+  .table-header {
+    grid-template-columns: 1fr 60px 50px 60px 80px;
+    font-size: 10px;
+  }
+  
+  .table-row {
+    grid-template-columns: 1fr 60px 50px 60px 80px;
+    font-size: 10px;
+  }
+  
+  /* Hide less important columns on mobile */
+  .header-cell:nth-child(4), /* Mgas/s */
+  .header-cell:nth-child(5), /* Network Util */
+  .header-cell:nth-child(6), /* Stack */
+  .header-cell:nth-child(7), /* Gas Limit */
+  .cell:nth-child(4),
+  .cell:nth-child(5),
+  .cell:nth-child(6),
+  .cell:nth-child(7) {
+    display: none;
+  }
+  
+  .header-cell {
+    padding: 4px 6px;
+  }
+  
+  .cell {
+    padding: 4px 6px;
+    min-height: 28px;
+  }
+  
+  .network-name {
+    font-size: 10px;
+  }
+  
+  .timestamp-cell {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: 2px;
+  }
+  
+  .header-section {
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+    padding: 4px;
+  }
+  
+  .header-center {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .totals-section {
+    padding: 6px;
+  }
+  
+  /* Even more compact table for very small screens */
+  .table-header {
+    grid-template-columns: 1fr 50px 40px 60px;
+    font-size: 9px;
+  }
+  
+  .table-row {
+    grid-template-columns: 1fr 50px 40px 60px;
+    font-size: 9px;
+  }
+  
+  /* Hide utilization column on very small screens */
+  .header-cell:nth-child(8), /* Utilization */
+  .cell:nth-child(8) {
+    display: none;
+  }
+  
+  .header-cell {
+    padding: 3px 4px;
+  }
+  
+  .cell {
+    padding: 3px 4px;
+    min-height: 24px;
   }
 }
