@@ -124,18 +124,6 @@ function App() {
 
     // Now fetch data for each chain
     const chainResults: ChainBlockData[] = [...initialChainData]
-      const initialChainData: ChainBlockData[] = activeChains.map(chain => ({
-        chainName: chain.chainName,
-        blockchainId: chain.evmChainId || chain.blockchainId,
-        blockData: null,
-        loading: true,
-        error: null,
-        lastUpdated: Date.now()
-      }))
-      
-      setChainData(initialChainData)
-      setLoading(false)
-    }
 
     // Create a temporary array to collect all results
     const tempChainData = [...chainData]
@@ -209,25 +197,29 @@ function App() {
         const blockData = await fetchChainData(chain.rpcUrl!, chain.chainName, chain.evmChainId!)
         
         // Find and update the corresponding chain
-        const chainIndex = chainResults.findIndex(item => item.blockchainId === chain.evmChainId)
+        const chainIndex = tempChainData.findIndex(item => item.blockchainId === chain.evmChainId)
         if (chainIndex !== -1) {
-          chainResults[chainIndex] = {
-            ...chainResults[chainIndex],
+          tempChainData[chainIndex] = {
+            ...tempChainData[chainIndex],
             blockData,
             loading: false,
             error: null,
             lastUpdated: Date.now()
           }
-            lastUpdated: Date.now()
-          }
         }
       } catch (err) {
         // Find and update the corresponding chain with error
-        const chainIndex = chainResults.findIndex(item => item.blockchainId === chain.evmChainId)
+        const chainIndex = tempChainData.findIndex(item => item.blockchainId === chain.evmChainId)
         if (chainIndex !== -1) {
-          chainResults[chainIndex] = {
-            ...chainResults[chainIndex],
-    await Promise.allSettled(promises)
+          tempChainData[chainIndex] = {
+            ...tempChainData[chainIndex],
+            loading: false,
+            error: err instanceof Error ? err.message : `Unknown error for ${chain.chainName}`,
+            lastUpdated: Date.now()
+          }
+        }
+      }
+    })
 
     await Promise.allSettled(promises)
     
