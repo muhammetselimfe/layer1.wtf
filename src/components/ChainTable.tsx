@@ -282,7 +282,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
               <AnimatedCounter value={kbPerSecond} decimals={2} />
             </div>
             <div className="cell">
-              avalanche
+              Avalanche L1
             </div>
             <div className="cell">
               subnets
