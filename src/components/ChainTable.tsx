@@ -23,31 +23,33 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
   // Initialize static rows once when we first get data
   useEffect(() => {
     if (staticRows.length === 0 && chainData.length > 0) {
-      // Create initial static rows - chains with data sorted by block number (highest first)
-      const chainsWithData = chainData
-        .filter(chain => chain.blockData && !chain.loading && !chain.error)
-        .sort((a, b) => {
+      // Sort all chains by block number (highest first), then by name for those without data
+      const sortedChains = [...chainData].sort((a, b) => {
+        const aHasData = a.blockData && !a.loading && !a.error
+        const bHasData = b.blockData && !b.loading && !b.error
+        
+        // Chains with data come first
+        if (aHasData && !bHasData) return -1
+        if (!aHasData && bHasData) return 1
+        
+        // If both have data, sort by block number (highest first)
+        if (aHasData && bHasData) {
           const blockNumberA = parseInt(a.blockData!.number, 16)
           const blockNumberB = parseInt(b.blockData!.number, 16)
-          return blockNumberB - blockNumberA // Highest block number first
-        })
-        .map(chain => ({
-          chainName: chain.chainName,
-          blockchainId: chain.blockchainId,
-          initialBlockNumber: parseInt(chain.blockData!.number, 16)
-        }))
+          return blockNumberB - blockNumberA
+        }
+        
+        // For chains without data, sort alphabetically
+        return a.chainName.localeCompare(b.chainName)
+      })
+      
+      const initialRows = sortedChains.map(chain => ({
+        chainName: chain.chainName,
+        blockchainId: chain.blockchainId,
+        initialBlockNumber: chain.blockData ? parseInt(chain.blockData.number, 16) : 0
+      }))
 
-      // Add chains without data at the end, sorted alphabetically
-      const chainsWithoutData = chainData
-        .filter(chain => !chain.blockData || chain.loading || chain.error)
-        .map(chain => ({
-          chainName: chain.chainName,
-          blockchainId: chain.blockchainId,
-          initialBlockNumber: 0
-        }))
-        .sort((a, b) => a.chainName.localeCompare(b.chainName))
-
-      setStaticRows([...chainsWithData, ...chainsWithoutData])
+      setStaticRows(initialRows)
     }
   }, [chainData, staticRows.length])
 
