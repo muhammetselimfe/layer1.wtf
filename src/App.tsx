@@ -268,37 +268,5 @@ function App() {
     </div>
   )
 }
-          item.blockchainId === chain.evmChainId
-            ? { ...item, blockData, loading: false, error: null, lastUpdated: Date.now() }
-            : item
-        ))
-      } catch (err) {
-        setChainData(prev => prev.map((item, i) => 
-          item.blockchainId === chain.evmChainId
-            ? { ...item, loading: false, error: err instanceof Error ? err.message : `Unknown error for ${chain.chainName}`, lastUpdated: Date.now() }
-            : item
-        ))
-      }
-    })
-
-    await Promise.allSettled(promises)
-  }
-
-  useEffect(() => {
-    fetchAllChainData()
-    const interval = setInterval(fetchAllChainData, 5000) // Update every 5 seconds for faster updates
-    return () => clearInterval(interval)
-  }, [])
-
-  return (
-    <div className="app">
-      <Dashboard 
-        chainData={chainData}
-        loading={loading} 
-        onRefresh={fetchAllChainData}
-      />
-    </div>
-  )
-}
 
 export default App
