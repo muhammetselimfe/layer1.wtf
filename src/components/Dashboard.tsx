@@ -120,7 +120,7 @@ export function Dashboard({ chainData, loading, onRefresh }: DashboardProps) {
 
         <div className="totals-section">
           <div className="totals-header">Totals</div>
-          <MetricsPanel metrics={metrics} loading={loading} />
+          <MetricsPanel metrics={metrics} loading={loading} chainData={chainData} />
         </div>
 
         <div className="filters-section">
