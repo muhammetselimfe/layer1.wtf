@@ -96,18 +96,32 @@ export function Dashboard({ chainData, loading, onRefresh }: DashboardProps) {
   }
 
   return (
-    <div className="dashboard">
+    <div className="app">
       <Header />
       
-      <div className="main-content">
-        <div className="tabs">
+      <div className="main-container">
+        <div className="header-section">
+          <div className="header-left">
+            <span>Layer1.wtf</span>
+            <span>||</span>
+            <span>Built by <a href="https://l1beat.io" className="link" target="_blank" rel="noopener noreferrer">L1Beat 🔺</a></span>
+          </div>
+          <div className="header-right">
+            L1s
+          </div>
+        </div>
+
+        <div className="tabs-section">
           <div className="tab active">L1s</div>
           <div className="tab inactive" onClick={handleIcmClick}>
             ICM
           </div>
         </div>
 
-        <MetricsPanel metrics={metrics} loading={loading} />
+        <div className="totals-section">
+          <div className="totals-header">Totals</div>
+          <MetricsPanel metrics={metrics} loading={loading} />
+        </div>
 
         <div className="filters-section">
           <div className="filters-header">Filters</div>
