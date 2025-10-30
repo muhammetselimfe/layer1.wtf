@@ -11,8 +11,11 @@ function App() {
 
   const fetchChainData = async (rpcUrl: string, chainName: string, evmChainId: string) => {
     try {
-      // First try the proxy route to avoid CORS issues
-      const apiUrl = `/api/rpc/${evmChainId}/rpc`
+      // In production, use the external API directly; in development, use proxy
+      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+      const apiUrl = isProduction 
+        ? `https://idx6.solokhin.com/api/${evmChainId}/rpc`
+        : `/api/rpc/${evmChainId}/rpc`
       
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -30,12 +33,12 @@ function App() {
       })
       
       if (!response.ok) {
-        // If proxy fails with 500 and chain config not found, try direct RPC
+        // If API fails with 500 and chain config not found, try direct RPC
         if (response.status === 500) {
           try {
             const errorText = await response.text()
             if (errorText.includes('Chain config not found')) {
-              console.log(`Proxy API doesn't support chain ${chainName} (${evmChainId}), trying direct RPC...`)
+              console.log(`API doesn't support chain ${chainName} (${evmChainId}), trying direct RPC...`)
               return await fetchChainDataDirect(rpcUrl, chainName, evmChainId)
             }
           } catch (textError) {
