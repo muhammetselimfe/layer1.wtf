@@ -35,8 +35,8 @@ export function MetricsPanel({ metrics, loading }: MetricsPanelProps) {
         </div>
         <div className="total-metric">
           <div className="metric-label">
-            <Tooltip content="The average percentage of gas limit used across all chains">
-              KB/s ⓘ
+            <Tooltip content="The average network utilization percentage across all chains">
+              Avg Util ⓘ
             </Tooltip>
           </div>
           <div className="metric-value">Loading...</div>
@@ -69,8 +69,8 @@ export function MetricsPanel({ metrics, loading }: MetricsPanelProps) {
         </div>
         <div className="total-metric">
           <div className="metric-label">
-            <Tooltip content="The average percentage of gas limit used across all chains">
-              KB/s ⓘ
+            <Tooltip content="The average network utilization percentage across all chains">
+              Avg Util ⓘ
             </Tooltip>
           </div>
           <div className="metric-value">0.00</div>
@@ -80,9 +80,8 @@ export function MetricsPanel({ metrics, loading }: MetricsPanelProps) {
     )
   }
 
-  // Convert gas/s to Mgas/s and calculate KB/s (approximate)
+  // Convert gas/s to Mgas/s
   const mgasPerSecond = metrics.totalGasPerSecond / 1000000
-  const kbPerSecond = mgasPerSecond * 0.021 // Rough approximation
 
   return (
     <div className="totals-grid">
@@ -110,12 +109,12 @@ export function MetricsPanel({ metrics, loading }: MetricsPanelProps) {
       </div>
       <div className="total-metric">
         <div className="metric-label">
-          <Tooltip content="Approximate data throughput in kilobytes per second">
-            KB/s ⓘ
+          <Tooltip content="The average network utilization percentage across all chains">
+            Avg Util ⓘ
           </Tooltip>
         </div>
         <div className="metric-value">
-          <AnimatedCounter value={kbPerSecond} decimals={2} />
+          <AnimatedCounter value={metrics.averageUtilization} decimals={2} />
         </div>
         <div className="metric-change positive">(+15.2%)</div>
       </div>

@@ -56,7 +56,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
             <span className="sort-icon">⌄</span> Mgas/s
           </div>
           <div className="header-cell">
-            <span className="sort-icon">⌄</span> KB/s
+            <span className="sort-icon">⌄</span> Network Util
           </div>
           <div className="header-cell">
             <span className="sort-icon">⌄</span> Stack
@@ -91,7 +91,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
             <span className="sort-icon">⌄</span> Mgas/s
           </div>
           <div className="header-cell">
-            <span className="sort-icon">⌄</span> KB/s
+            <span className="sort-icon">⌄</span> Network Util
           </div>
           <div className="header-cell">
             <span className="sort-icon">⌄</span> Stack
@@ -125,7 +125,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
           <span className="sort-icon">⌄</span> Mgas/s
         </div>
         <div className="header-cell">
-          <span className="sort-icon">⌄</span> KB/s
+          <span className="sort-icon">⌄</span> Network Util
         </div>
         <div className="header-cell">
           <span className="sort-icon">⌄</span> Stack
@@ -199,7 +199,6 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
         const blockNumber = parseInt(chain.blockData.number, 16)
         const gasUsed = parseInt(chain.blockData.gasUsed, 16) / 1000000 // Convert to Mgas
         const tps = chain.blockData.transactions.length / 2 // Assuming 2 second block time
-        const kbPerSecond = gasUsed * 0.021 // Rough approximation
         const timestamp = parseInt(chain.blockData.timestamp, 16)
         const gasLimit = parseInt(chain.blockData.gasLimit, 16) / 1000000 // Convert to Mgas
         
@@ -223,7 +222,7 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
               <AnimatedCounter value={gasUsed} decimals={2} />
             </div>
             <div className="cell numeric-cell">
-              <AnimatedCounter value={kbPerSecond} decimals={2} />
+              <AnimatedCounter value={utilization} decimals={1} />%
             </div>
             <div className="cell">
               Avalanche L1
