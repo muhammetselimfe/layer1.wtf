@@ -541,22 +541,20 @@ body {
   
   /* Mobile table - show only essential columns */
   .table-header {
-    grid-template-columns: 1fr 60px 50px 60px 80px;
+    grid-template-columns: 1fr 80px 50px 70px 80px 80px;
     font-size: 10px;
   }
   
   .table-row {
-    grid-template-columns: 1fr 60px 50px 60px 80px;
+    grid-template-columns: 1fr 80px 50px 70px 80px 80px;
     font-size: 10px;
   }
   
-  /* Hide less important columns on mobile */
+  /* Hide only the least important columns on mobile */
   .header-cell:nth-child(4), /* Mgas/s */
-  .header-cell:nth-child(5), /* Network Util */
   .header-cell:nth-child(6), /* Stack */
   .header-cell:nth-child(7), /* Gas Limit */
   .cell:nth-child(4),
-  .cell:nth-child(5),
   .cell:nth-child(6),
   .cell:nth-child(7) {
     display: none;
@@ -603,16 +601,27 @@ body {
   
   /* Even more compact table for very small screens */
   .table-header {
-    grid-template-columns: 1fr 50px 40px 60px;
+    grid-template-columns: 1fr 70px 45px 60px 70px;
     font-size: 9px;
   }
   
   .table-row {
-    grid-template-columns: 1fr 50px 40px 60px;
+    grid-template-columns: 1fr 70px 45px 60px 70px;
     font-size: 9px;
   }
   
-  /* Hide utilization column on very small screens */
+  /* Hide gas limit column on very small screens */
+  .header-cell:nth-child(7), /* Gas Limit */
+  .cell:nth-child(7) {
+    display: none;
+  }
+  
+  /* Keep utilization visible but hide stack */
+  .header-cell:nth-child(6), /* Stack */
+  .cell:nth-child(6) {
+    display: none;
+  }
+}
   .header-cell:nth-child(8), /* Utilization */
   .cell:nth-child(8) {
     display: none;
