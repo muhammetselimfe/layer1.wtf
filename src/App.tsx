@@ -109,7 +109,7 @@ function App() {
   const fetchAllChainData = async () => {
     const activeChains = getActiveChains()
     
-    // Initialize chain data with loading state
+    // Initialize chain data with loading state and set it immediately
     const initialChainData: ChainBlockData[] = activeChains.map(chain => ({
       chainName: chain.chainName,
       blockchainId: chain.evmChainId || chain.blockchainId,
@@ -119,24 +119,22 @@ function App() {
       lastUpdated: Date.now()
     }))
     
+    // Set initial loading state
     setChainData(initialChainData)
     setLoading(false)
 
-    // Now fetch data for each chain
-    const chainResults: ChainBlockData[] = [...initialChainData]
-
-    // Create a temporary array to collect all results
-    const tempChainData = [...chainData]
+    // Create a working copy for updates
+    const workingChainData = [...initialChainData]
 
     // Fetch data for each chain
-    const promises = activeChains.filter(chain => chain.evmChainId && chain.rpcUrl).map(async (chain, index) => {
+    const promises = activeChains.filter(chain => chain.evmChainId && chain.rpcUrl).map(async (chain) => {
       try {
         const blockData = await fetchChainData(chain.rpcUrl!, chain.chainName, chain.evmChainId!)
-        // Update the temporary array
-        const chainIndex = tempChainData.findIndex(item => item.blockchainId === chain.evmChainId)
+        // Update the working array
+        const chainIndex = workingChainData.findIndex(item => item.blockchainId === chain.evmChainId)
         if (chainIndex !== -1) {
-          tempChainData[chainIndex] = {
-            ...tempChainData[chainIndex],
+          workingChainData[chainIndex] = {
+            ...workingChainData[chainIndex],
             blockData,
             loading: false,
             error: null,
@@ -144,11 +142,11 @@ function App() {
           }
         }
       } catch (err) {
-        // Update the temporary array with error
-        const chainIndex = tempChainData.findIndex(item => item.blockchainId === chain.evmChainId)
+        // Update the working array with error
+        const chainIndex = workingChainData.findIndex(item => item.blockchainId === chain.evmChainId)
         if (chainIndex !== -1) {
-          tempChainData[chainIndex] = {
-            ...tempChainData[chainIndex],
+          workingChainData[chainIndex] = {
+            ...workingChainData[chainIndex],
             loading: false,
             error: err instanceof Error ? err.message : `Unknown error for ${chain.chainName}`,
             lastUpdated: Date.now()
@@ -160,8 +158,8 @@ function App() {
     // Wait for all promises to complete
     await Promise.allSettled(promises)
 
-    // Now sort the complete data by block number (highest to lowest)
-    const sortedChainData = tempChainData.sort((a, b) => {
+    // Sort the complete data by block number (highest to lowest)
+    const sortedChainData = workingChainData.sort((a, b) => {
       const aHasData = a.blockData && !a.loading && !a.error
       const bHasData = b.blockData && !b.loading && !b.error
       
