@@ -67,6 +67,14 @@ body {
   gap: 20px;
 }
 
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  justify-content: center;
+}
+
 .header-right {
   color: #00ffff;
 }

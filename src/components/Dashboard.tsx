@@ -101,7 +101,7 @@ export function Dashboard({ chainData, loading, onRefresh }: DashboardProps) {
       
       <div className="main-container">
         <div className="header-section">
-          <div className="header-left">
+          <div className="header-center">
             <span>Layer1.wtf</span>
             <span>||</span>
             <span>Built by <a href="https://l1beat.io" className="link" target="_blank" rel="noopener noreferrer">L1Beat 🔺</a></span>
