@@ -85,14 +85,30 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
     return (
       <div className="chain-table">
         <div className="table-header">
-          <div className="header-cell">Network</div>
-          <div className="header-cell sortable">Block ⇅</div>
-          <div className="header-cell sortable">TPS ⇅</div>
-          <div className="header-cell sortable">Gas Used ⇅</div>
-          <div className="header-cell sortable">Gas Limit ⇅</div>
-          <div className="header-cell sortable">Utilization ⇅</div>
-          <div className="header-cell sortable">Size ⇅</div>
-          <div className="header-cell sortable">Transactions ⇅</div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> Network
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> Block
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> TPS
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> Mgas/s
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> KB/s
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> Stack
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> DA
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> Settlement
+          </div>
           <div className="header-cell">Last Updated</div>
         </div>
         <div className="loading-row">Loading chain data...</div>
@@ -104,14 +120,30 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
     return (
       <div className="chain-table">
         <div className="table-header">
-          <div className="header-cell">Network</div>
-          <div className="header-cell sortable">Block ⇅</div>
-          <div className="header-cell sortable">TPS ⇅</div>
-          <div className="header-cell sortable">Gas Used ⇅</div>
-          <div className="header-cell sortable">Gas Limit ⇅</div>
-          <div className="header-cell sortable">Utilization ⇅</div>
-          <div className="header-cell sortable">Size ⇅</div>
-          <div className="header-cell sortable">Transactions ⇅</div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> Network
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> Block
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> TPS
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> Mgas/s
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> KB/s
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> Stack
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> DA
+          </div>
+          <div className="header-cell">
+            <span className="sort-icon">⌄</span> Settlement
+          </div>
           <div className="header-cell">Last Updated</div>
         </div>
         <div className="no-data">No data available</div>
@@ -122,14 +154,30 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
   return (
     <div className="chain-table">
       <div className="table-header">
-        <div className="header-cell">Network</div>
-        <div className="header-cell sortable">Block ⇅</div>
-        <div className="header-cell sortable">TPS ⇅</div>
-        <div className="header-cell sortable">Gas Used ⇅</div>
-        <div className="header-cell sortable">Gas Limit ⇅</div>
-        <div className="header-cell sortable">Utilization ⇅</div>
-        <div className="header-cell sortable">Size ⇅</div>
-        <div className="header-cell sortable">Transactions ⇅</div>
+        <div className="header-cell">
+          <span className="sort-icon">⌄</span> Network
+        </div>
+        <div className="header-cell">
+          <span className="sort-icon">⌄</span> Block
+        </div>
+        <div className="header-cell">
+          <span className="sort-icon">⌄</span> TPS
+        </div>
+        <div className="header-cell">
+          <span className="sort-icon">⌄</span> Mgas/s
+        </div>
+        <div className="header-cell">
+          <span className="sort-icon">⌄</span> KB/s
+        </div>
+        <div className="header-cell">
+          <span className="sort-icon">⌄</span> Stack
+        </div>
+        <div className="header-cell">
+          <span className="sort-icon">⌄</span> DA
+        </div>
+        <div className="header-cell">
+          <span className="sort-icon">⌄</span> Settlement
+        </div>
         <div className="header-cell">Last Updated</div>
       </div>
       
@@ -211,11 +259,9 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
         }
 
         const blockNumber = parseInt(chain.blockData.number, 16)
-        const gasUsed = parseInt(chain.blockData.gasUsed, 16)
-        const gasLimit = parseInt(chain.blockData.gasLimit, 16)
-        const blockSize = parseInt(chain.blockData.size, 16)
-        const utilization = (gasUsed / gasLimit) * 100
+        const gasUsed = parseInt(chain.blockData.gasUsed, 16) / 1000000 // Convert to Mgas
         const tps = chain.blockData.transactions.length / 2 // Assuming 2 second block time
+        const kbPerSecond = gasUsed * 0.021 // Rough approximation
         const timestamp = parseInt(chain.blockData.timestamp, 16)
 
         return (
@@ -223,26 +269,26 @@ export const ChainTable = React.memo(function ChainTable({ chainData, loading, o
             <div className="cell network-cell">
               <span className="network-name">{row.chainName}</span>
             </div>
-            <div className="cell block-number">
+            <div className="cell numeric-cell">
               #<AnimatedCounter value={blockNumber} decimals={0} />
             </div>
-            <div className="cell">
+            <div className="cell numeric-cell">
               <AnimatedCounter value={tps} decimals={1} />
             </div>
-            <div className="cell">
-              <AnimatedCounter value={gasUsed} decimals={0} />
+            <div className="cell numeric-cell">
+              <AnimatedCounter value={gasUsed} decimals={2} />
+            </div>
+            <div className="cell numeric-cell">
+              <AnimatedCounter value={kbPerSecond} decimals={2} />
             </div>
             <div className="cell">
-              <AnimatedCounter value={gasLimit} decimals={0} />
+              avalanche
             </div>
             <div className="cell">
-              <AnimatedCounter value={utilization} decimals={1} suffix="%" />
+              subnets
             </div>
             <div className="cell">
-              <AnimatedCounter value={blockSize} decimals={0} suffix=" B" />
-            </div>
-            <div className="cell">
-              <AnimatedCounter value={chain.blockData.transactions.length} decimals={0} />
+              avalanche
             </div>
             <div className="cell timestamp-cell">{formatTimestamp(timestamp)}</div>
           </div>
